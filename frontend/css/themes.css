@@ -1,0 +1,45 @@
+/* ==========================================================================
+   SENTINEL — theme tokens
+   Warm neutral light theme with a carefully designed dark theme.
+   Deep forest-green accent. Values inherited verbatim from SENTINEL 1.x.
+   ========================================================================== */
+
+:root {
+  color-scheme: light;
+  --canvas: #f3f2ee;
+  --paper: #fff;
+  --paper-2: #faf9f6;
+  --ink: #20221f;
+  --muted: #73766f;
+  --line: #deded5;
+  --line-dark: #b9bcb1;
+  --green: #245846;
+  --green-soft: #e6efe9;
+  --red: #a53e37;
+  --red-soft: #f8e9e7;
+  --amber: #94631d;
+  --amber-soft: #f8f0dc;
+  --blue: #315c78;
+  --blue-soft: #e9f0f5;
+  --mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  --sans: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+
+[data-theme=dark] {
+  color-scheme: dark;
+  --canvas: #171916;
+  --paper: #20231f;
+  --paper-2: #1b1e1a;
+  --ink: #eceee8;
+  --muted: #a0a69b;
+  --line: #353a32;
+  --line-dark: #4d554a;
+  --green: #79b69a;
+  --green-soft: #263b30;
+  --red: #e18c82;
+  --red-soft: #432c29;
+  --amber: #e1bd75;
+  --amber-soft: #403622;
+  --blue: #9bc4de;
+  --blue-soft: #293943;
+}

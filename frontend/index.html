@@ -1,0 +1,129 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SENTINEL — Security Evidence Workstation</title>
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="css/themes.css">
+<link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+<div class="app">
+<aside>
+  <div>
+    <div class="brand"><div class="brand-symbol">S/</div><div><div class="brand-name">SENTINEL</div><div class="brand-sub">HTTP / EVIDENCE WORKSTATION</div></div></div>
+    <div class="nav-caption">Workspace</div>
+    <nav class="nav" aria-label="Main navigation">
+      <button class="active" data-page="overview"><span class="ico">⌂</span>Overview</button>
+      <button data-page="newscan"><span class="ico">＋</span>New scan</button>
+      <button data-page="findings"><span class="ico">≡</span>Findings <span id="navFindingCount" class="mono"></span></button>
+      <button data-page="history"><span class="ico">◷</span>Scan history</button>
+      <button data-page="reports"><span class="ico">↗</span>Reports</button>
+      <button data-page="methodology"><span class="ico">§</span>Methodology</button>
+    </nav>
+  </div>
+  <div class="side-bottom"><div class="side-status"><span class="dot" id="statusDot"></span><span id="sideMode">Connecting…</span></div><div class="version">SENTINEL 2.5.0 · EVIDENCE ENGINE</div><div style="margin-top:8px">No scan results leave this machine.</div></div>
+</aside>
+<main>
+  <header class="topbar"><div class="crumb">WORKSPACE <span style="padding:0 7px">/</span> <strong id="crumbPage">Overview</strong></div><div class="top-actions"><span class="tag" id="modeTag">DEMO MODE</span><button class="quiet-btn" id="themeToggle" aria-label="Toggle theme">◐ Theme</button></div></header>
+  <div class="content">
+    <section class="section-page active" id="page-overview">
+      <div class="page-heading"><div><div class="eyebrow">Security configuration review / 01</div><h1>Evidence, not assumptions.</h1><p>Inspect observable HTTP security controls, record what was actually seen, and keep blocked checks separate from findings.</p></div><span class="tag">BUILD 2.5.0 · EVIDENCE ENGINE</span></div>
+      <section class="target-panel" id="scanPanel">
+        <div class="panel-head"><span class="panel-label">01 / Target definition</span><span class="tag" id="targetState">Ready for analysis</span></div>
+        <form id="scanForm">
+          <div class="target-form"><div class="field"><label for="targetUrl">Target URL</label><input id="targetUrl" type="url" value="https://example.com" placeholder="https://your-domain.example" autocomplete="url" required><div class="help">Scan only websites you own or have permission to assess.</div></div><div class="field" style="flex:0 0 220px"><label for="profile">Execution mode</label><select id="profile"><option value="server">Server scan · local API</option><option value="demo-mixed">Demo · mixed findings</option><option value="demo-good">Demo · hardened profile</option><option value="demo-poor">Demo · weak configuration</option><option value="browser">Live browser request</option></select><div class="help">Server and browser scans require the authorization confirmation below.</div></div><button class="btn primary" id="scanButton" type="submit">Run analysis →</button></div>
+          <div class="consent" id="authConsent">
+            <label class="consent-row" for="authorizeScan">
+              <input type="checkbox" id="authorizeScan">
+              <span><strong>Authorization confirmation.</strong> I confirm that I own this target or have explicit permission to assess it, and I accept responsibility for requesting this scan.</span>
+            </label>
+            <div class="help">Server and browser scans stay disabled until this box is checked. This record is an accountability measure — checking it documents your claim; it is not legal authorization. Demo profiles need no confirmation because no request is made. The backend independently rejects real scans without <code>authorization: true</code>.</div>
+          </div>
+        </form>
+        <div class="target-meta">Server scans perform one passive GET request from this machine. <code>Browser</code> mode stays subject to CORS; blocked requests are reported instead of invented.</div>
+      </section>
+      <div class="notice" id="notice"><span class="mark">!</span><div><strong>CONNECTING…</strong> Checking the local SENTINEL API.</div></div>
+      <section class="summary" aria-label="Scan summary">
+        <div class="metric"><div class="label">Configuration score</div><div class="score-wrap"><div class="score-ring" id="scoreRing">—</div><div><div class="value small" id="scoreText">— / 100</div><div class="sub" id="scoreSub">Awaiting analysis</div></div></div></div>
+        <div class="metric"><div class="label">Potential findings</div><div class="value" id="totalCount">0</div><div class="sub" id="findingsSub">Checks that indicate a potential weakness</div></div>
+        <div class="metric"><div class="label">High / critical</div><div class="value" id="highCount">0</div><div class="sub">Review recommended</div></div>
+        <div class="metric"><div class="label">Checks observed</div><div class="value" id="observedCount">0</div><div class="sub" id="observedSub">—</div></div>
+        <div class="metric"><div class="label">Last analysis</div><div class="value small" id="lastScan">—</div><div class="sub" id="durationLabel">Duration not measured</div></div>
+      </section>
+      <div class="workspace">
+        <section class="panel" id="findingsPanel">
+          <div class="panel-head"><span class="panel-label">02 / Findings register</span><div class="head-actions"><span class="tag" id="findingCountTag">0 records</span><button class="quiet-btn small-btn" id="exportJsonTop" type="button">Export JSON</button></div></div>
+          <div class="find-controls"><input class="search" id="searchFindings" placeholder="Search findings, headers, evidence…" aria-label="Search findings"><select id="severityFilter" aria-label="Filter by severity"><option value="all">All severities</option><option>Critical</option><option>High</option><option>Medium</option><option>Low</option><option>Info</option><option>Pass</option></select><select id="sortFindings" aria-label="Sort findings"><option value="severity">Sort: severity</option><option value="name">Sort: name</option></select></div>
+          <div class="table-wrap"><table><thead><tr><th style="width:82px">Severity</th><th>Finding / check</th><th style="width:110px">Evidence</th></tr></thead><tbody id="findingsBody"></tbody></table></div>
+          <div id="findingsEmpty" class="empty" hidden><strong>No matching findings</strong>Adjust your search or severity filter.</div>
+        </section>
+        <section class="panel detail-panel">
+          <div class="panel-head"><span class="panel-label">03 / Finding inspection</span><span class="tag" id="detailRef">REF —</span></div>
+          <div class="detail-body" id="detailBody"></div>
+        </section>
+      </div>
+      <div class="lower-grid">
+        <section class="panel"><div class="panel-head"><span class="panel-label">04 / Evidence completeness</span><span class="tag" id="evidenceTag">—</span></div><ul class="simple-list" id="evidenceList"></ul></section>
+        <section class="panel"><div class="panel-head"><span class="panel-label">05 / Recent activity</span><button class="quiet-btn small-btn" data-goto="history" type="button">View history →</button></div><ul class="simple-list" id="recentList"></ul></section>
+      </div>
+      <div class="footer-note">SENTINEL checks a limited set of observable configuration signals. A score is an educational heuristic, not a certification or a complete vulnerability assessment. Server-side scans run from this machine; nothing is uploaded to a remote service.</div>
+    </section>
+    <section class="section-page" id="page-newscan">
+      <div class="page-heading"><div><div class="eyebrow">Workspace / 02</div><h1>Define a new scan</h1><p>Choose an execution mode, then configure the target on the overview page.</p></div></div>
+      <div class="method-grid">
+        <div class="method-card"><h3>Server scan · local API</h3><p>One passive GET request performed by the local backend. Sees all response headers, cookies and basic TLS metadata — not limited by CORS. Recommended for authorized targets.</p><button class="btn" data-use-mode="server" type="button" style="margin-top:14px">Use server scan →</button></div>
+        <div class="method-card"><h3>Demo profiles</h3><p>Simulated records for interface testing and training: mixed findings, a hardened profile, and a weak configuration. No request is ever made for demo profiles.</p><button class="btn" data-use-mode="demo" type="button" style="margin-top:14px">Use a demo profile →</button></div>
+        <div class="method-card"><h3>Live browser request</h3><p>A real fetch() issued by this page. Subject to CORS: servers that do not allow browser access cannot be inspected, and SENTINEL reports that honestly instead of inventing results.</p><button class="btn" data-use-mode="browser" type="button" style="margin-top:14px">Use browser request →</button></div>
+        <div class="method-card"><h3>Responsible use</h3><p>Only assess targets you own or have explicit permission to test. Real scans require the authorization confirmation in the UI, and the backend independently rejects requests without it. The SSRF guard blocks private/loopback addresses by default; enable SENTINEL_ALLOW_PRIVATE=1 for your own lab.</p><span class="tag" style="margin-top:14px">AUTHORIZED TARGETS ONLY</span></div>
+      </div>
+    </section>
+    <section class="section-page" id="page-findings">
+      <div class="page-heading"><div><div class="eyebrow">Workspace / 03</div><h1>Findings register</h1><p>Inspect the current scan observations. Search and filters live on the overview register.</p></div><button class="btn" id="exportCsv" type="button">Export CSV</button></div>
+      <div class="panel"><div class="panel-head"><span class="panel-label">Current scan records</span><span class="tag" id="findingCountTag2">0 records</span></div><div class="table-wrap"><table><thead><tr><th>Severity</th><th>Finding / check</th><th>Evidence</th></tr></thead><tbody id="findingsBody2"></tbody></table></div></div>
+    </section>
+    <section class="section-page" id="page-history">
+      <div class="page-heading"><div><div class="eyebrow">Workspace / 04</div><h1>Scan history</h1><p>Stored in the local SQLite database on this machine. Browser-mode records taken while the API is offline are kept in this browser only.</p></div><button class="btn" id="clearHistory" type="button">Clear history</button></div>
+      <div class="panel"><div class="panel-head"><span class="panel-label">Saved scan records</span><span class="tag" id="historySourceTag">LOCAL API + BROWSER</span></div><ul class="simple-list" id="historyList"></ul><div id="historyEmpty" class="empty" hidden><strong>No saved scans</strong>Run an analysis to create a history entry.</div></div>
+    </section>
+    <section class="section-page" id="page-reports">
+      <div class="page-heading"><div><div class="eyebrow">Workspace / 05</div><h1>Reports &amp; exports</h1><p>Export the current record for documentation, review, or a bootcamp submission.</p></div></div>
+      <div class="method-grid">
+        <div class="method-card"><h3>Structured JSON</h3><p>Includes target, mode, timestamp, score, findings, evidence, and remediation guidance.</p><button class="btn" style="margin-top:14px" id="exportJson" type="button">Download JSON report</button></div>
+        <div class="method-card"><h3>Findings CSV</h3><p>A tabular version of the current findings, suitable for spreadsheet review.</p><button class="btn" style="margin-top:14px" id="exportCsv2" type="button">Download CSV findings</button></div>
+        <div class="method-card"><h3>Markdown report</h3><p>A human-readable report with summary, finding details and limitations — good for repositories and review documents.</p><button class="btn" style="margin-top:14px" id="exportMd" type="button">Download Markdown</button></div>
+        <div class="method-card"><h3>Printable HTML</h3><p>Opens a standalone, print-styled report in a new tab. Use the browser print dialog to save it as PDF.</p><button class="btn" style="margin-top:14px" id="printReport" type="button">Open printable report</button></div>
+      </div>
+      <div class="footer-note">Evidence integrity: demo findings are labeled as simulated. Live results contain only information visible to the scanner. No remote upload — every export is generated locally.</div>
+    </section>
+    <section class="section-page" id="page-methodology">
+      <div class="page-heading"><div><div class="eyebrow">Workspace / 06</div><h1>Methodology &amp; limitations</h1><p>Understand what this tool can conclude, what it cannot see, and how the score is calculated.</p></div></div>
+      <div class="method-grid">
+        <div class="method-card"><h3>HTTP security headers</h3><p>Checks for HSTS, Content-Security-Policy, X-Content-Type-Options, X-Frame-Options / frame-ancestors, Referrer-Policy, Permissions-Policy, COOP and further hardening signals. Server scans read the full response header set; browser scans only see what CORS exposes.</p></div>
+        <div class="method-card"><h3>Browser boundary</h3><p>Cross-origin requests are controlled by CORS. If a server does not allow browser access, browser mode cannot inspect its response headers. It does not bypass CORS. Server mode performs its request from the local backend instead.</p></div>
+        <div class="method-card"><h3>Score model</h3><p>Starts at 100 and deducts 15 for a high finding, 8 for medium, 3 for low, and 0 for informational/pass records (25 for critical). The score is clamped to 0–100 and mapped to an educational letter grade. This is a learning aid, not an industry rating.</p></div>
+        <div class="method-card"><h3>Scope</h3><p>This is a passive, limited configuration check. It does not crawl, exploit, brute-force, scan ports, or prove whether a site is vulnerable. Missing headers are not automatically exploitable flaws.</p></div>
+        <div class="method-card"><h3>Cookie visibility</h3><p>Browsers restrict JavaScript access to Set-Cookie and HttpOnly cookies, so browser mode cannot review cookie attributes. Server mode reads Set-Cookie attributes (Secure, HttpOnly, SameSite) but never records cookie values.</p></div>
+        <div class="method-card"><h3>SSRF guard &amp; safe transport</h3><p>The backend refuses private, loopback, link-local and reserved addresses by default. Redirects are never followed blindly: every hop is resolved and re-checked against the destination policy before any connection is made, and sockets connect only to validated addresses (pinning), which also closes the DNS-rebinding window. Redirect loops and chains beyond the configured cap are aborted. Only assess targets you own or have explicit permission to test.</p></div>
+      </div>
+      <div class="panel" style="margin-top:12px">
+        <div class="panel-head"><span class="panel-label">Check registry</span><span class="tag" id="registryCount">—</span></div>
+        <div class="table-wrap"><table><thead><tr><th style="width:110px">ID</th><th>Check</th><th style="width:110px">Category</th><th>What it inspects</th></tr></thead><tbody id="registryBody"></tbody></table></div>
+        <div id="registryEmpty" class="empty" hidden><strong>Registry unavailable</strong>The check registry is served by the local API.</div>
+      </div>
+    </section>
+  </div>
+</main>
+</div>
+<div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
+<noscript><div style="padding:20px;font-family:sans-serif">SENTINEL requires JavaScript to run its workstation interface.</div></noscript>
+<script src="js/validation.js" defer></script>
+<script src="js/api.js" defer></script>
+<script src="js/findings.js" defer></script>
+<script src="js/history.js" defer></script>
+<script src="js/reports.js" defer></script>
+<script src="js/scanner-ui.js" defer></script>
+<script src="js/app.js" defer></script>
+</body>
+</html>
